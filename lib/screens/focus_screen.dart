@@ -48,6 +48,7 @@ class _FocusScreenState extends State<FocusScreen>
       _timer?.cancel();
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        print('Playing phase');
         setState(() {
           if (_remainingTime > 0) {
             _remainingTime--;
