@@ -1,0 +1,56 @@
+name: Flutter APK Build (neon_task)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:   # allows manual run from GitHub UI
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up Java (required for Android build)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3️⃣ Install latest Flutter (gives Dart >= 3.10.4)
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # 4️⃣ Disable analytics (clean logs)
+      - name: Disable Flutter analytics
+        run: flutter config --no-analytics
+
+      # 5️⃣ Verify Flutter & Dart versions (important)
+      - name: Flutter doctor
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      # 6️⃣ Get dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 7️⃣ Build release APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # 8️⃣ Upload APK artifact (GitHub-supported version)
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: neon_task-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
